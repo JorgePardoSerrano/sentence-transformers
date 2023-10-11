@@ -591,7 +591,9 @@ class SentenceTransformer(nn.Sequential):
             show_progress_bar: bool = True,
             checkpoint_path: str = None,
             checkpoint_save_steps: int = 500,
-            checkpoint_save_total_limit: int = 0
+            checkpoint_save_total_limit: int = 0,
+            loss_tracker: Callable = None,
+            loss_tracker_steps: int = 0
             ):
         """
         Train the model with the given training objective
@@ -724,6 +726,9 @@ class SentenceTransformer(nn.Sequential):
                         loss_value.backward()
                         torch.nn.utils.clip_grad_norm_(loss_model.parameters(), max_grad_norm)
                         optimizer.step()
+
+                    if loss_tracker is not None and loss_tracker_steps > 0 and training_steps % loss_tracker_steps == 0:
+                        loss_tracker(loss_value=loss_value, training_steps=training_steps, global_step=global_step, epoch=epoch)
 
                     optimizer.zero_grad()
 
