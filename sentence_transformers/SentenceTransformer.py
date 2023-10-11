@@ -735,11 +735,11 @@ class SentenceTransformer(nn.Sequential):
                 training_steps += 1
                 global_step += 1
 
-                if loss_tracker is not None and loss_tracker_steps > 0 and training_steps % loss_tracker_steps == 0:
+                if loss_tracker is not None and loss_tracker_steps > 0 and global_step % loss_tracker_steps == 0:
                     loss_tracker(loss_value=loss_value, training_steps=training_steps, global_step=global_step, epoch=epoch)
 
-                if evaluation_steps > 0 and training_steps % evaluation_steps == 0:
-                    self._eval_during_training(evaluator, output_path, save_best_model, epoch, training_steps, callback)
+                if evaluation_steps > 0 and global_step % evaluation_steps == 0:
+                    self._eval_during_training(evaluator, output_path, save_best_model, epoch, global_step, callback)
 
                     for loss_model in loss_models:
                         loss_model.zero_grad()
