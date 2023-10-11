@@ -727,9 +727,6 @@ class SentenceTransformer(nn.Sequential):
                         torch.nn.utils.clip_grad_norm_(loss_model.parameters(), max_grad_norm)
                         optimizer.step()
 
-                    if loss_tracker is not None and loss_tracker_steps > 0 and training_steps % loss_tracker_steps == 0:
-                        loss_tracker(loss_value=loss_value, training_steps=training_steps, global_step=global_step, epoch=epoch)
-
                     optimizer.zero_grad()
 
                     if not skip_scheduler:
@@ -737,6 +734,9 @@ class SentenceTransformer(nn.Sequential):
 
                 training_steps += 1
                 global_step += 1
+
+                if loss_tracker is not None and loss_tracker_steps > 0 and training_steps % loss_tracker_steps == 0:
+                    loss_tracker(loss_value=loss_value, training_steps=training_steps, global_step=global_step, epoch=epoch)
 
                 if evaluation_steps > 0 and training_steps % evaluation_steps == 0:
                     self._eval_during_training(evaluator, output_path, save_best_model, epoch, training_steps, callback)
